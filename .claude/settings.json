@@ -1,0 +1,14 @@
+{
+  "hooks": {
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo '{\"systemMessage\": \"배포 페이지: https://linkit-alpha.vercel.app\"}'"
+          }
+        ]
+      }
+    ]
+  }
+}
