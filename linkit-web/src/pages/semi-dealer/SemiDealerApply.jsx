@@ -31,7 +31,7 @@ export default function SemiDealerApply() {
     password: '',
     passwordConfirm: '',
     region: '',
-    device: '',
+    nickname: '',
     note: '',
   })
   const [errors, setErrors] = useState({})
@@ -60,7 +60,20 @@ export default function SemiDealerApply() {
       setErrors(errs)
       return
     }
-    // TODO: supabase insert
+    const existing = JSON.parse(localStorage.getItem('sd_users') || '[]')
+    if (existing.find(u => u.phone === form.phone)) {
+      setErrors({ phone: '이미 가입 신청된 전화번호입니다.' })
+      return
+    }
+    existing.push({
+      name: form.name,
+      phone: form.phone,
+      password: form.password,
+      region: form.region,
+      nickname: form.nickname,
+      joinedAt: new Date().toLocaleDateString('ko-KR', { year: 'numeric', month: '2-digit', day: '2-digit' }).replace(/\. /g, '.').replace('.', ''),
+    })
+    localStorage.setItem('sd_users', JSON.stringify(existing))
     setSubmitted(true)
   }
 
@@ -131,8 +144,8 @@ export default function SemiDealerApply() {
             {errors.region && <p className="text-[11px] text-red-500 mt-1">{errors.region}</p>}
           </Field>
 
-          <Field label="사용 장비" hint="선택">
-            <input name="device" value={form.device} onChange={handleChange} placeholder="예: 6W 미니굴착기" className={inputCls}/>
+          <Field label="별명" hint="선택">
+            <input name="nickname" value={form.nickname} onChange={handleChange} placeholder="예: 현장왕, 굴삭기달인" className={inputCls}/>
           </Field>
 
           <Field label="메모" hint="선택">

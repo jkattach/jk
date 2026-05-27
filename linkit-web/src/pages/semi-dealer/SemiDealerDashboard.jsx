@@ -1,7 +1,5 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-
-const MOCK_USER = { name: '김현장', joinedAt: '2025.03.12' }
 
 const MOCK_ORDERS = [
   { id: 'LK-0934', product: '틸트로테이터 TR-5000', amount: '980,000', status: '배송완료', date: '2025.05.18' },
@@ -31,6 +29,21 @@ export default function SemiDealerDashboard() {
   const navigate = useNavigate()
   const [tab, setTab] = useState('홈')
   const [copied, setCopied] = useState(null)
+  const [user, setUser] = useState({ name: '', joinedAt: '' })
+
+  useEffect(() => {
+    const session = JSON.parse(localStorage.getItem('sd_session') || 'null')
+    if (!session) {
+      navigate('/semi-dealer', { replace: true })
+      return
+    }
+    setUser({ name: session.name, joinedAt: session.joinedAt })
+  }, [])
+
+  const handleLogout = () => {
+    localStorage.removeItem('sd_session')
+    navigate('/semi-dealer')
+  }
 
   const handleCopy = (code) => {
     navigator.clipboard.writeText(`https://linkit.kr/ref/${code}`)
@@ -54,7 +67,7 @@ export default function SemiDealerDashboard() {
             <span className="text-[10px] bg-orange-100 text-orange-600 font-bold px-2 py-0.5 rounded-full">파트너</span>
           </div>
           <button
-            onClick={() => navigate('/semi-dealer')}
+            onClick={handleLogout}
             className="text-[12px] text-gray-400 font-medium border border-gray-200 rounded-lg px-3 py-1"
           >
             로그아웃
@@ -87,11 +100,11 @@ export default function SemiDealerDashboard() {
             {/* 프로필 카드 */}
             <div className="bg-gradient-to-r from-orange-500 to-amber-400 text-white rounded-2xl p-5 flex items-center gap-4">
               <div className="w-12 h-12 rounded-full bg-white/20 flex items-center justify-center text-white font-extrabold text-xl flex-shrink-0">
-                {MOCK_USER.name[0]}
+                {user.name?.[0] ?? ''}
               </div>
               <div className="flex-1 min-w-0">
-                <p className="font-extrabold text-[16px]">{MOCK_USER.name} 님</p>
-                <p className="text-[11px] text-orange-100">파트너 · {MOCK_USER.joinedAt} 가입</p>
+                <p className="font-extrabold text-[16px]">{user.name} 님</p>
+                <p className="text-[11px] text-orange-100">파트너 · {user.joinedAt} 가입</p>
               </div>
             </div>
 
@@ -217,11 +230,11 @@ export default function SemiDealerDashboard() {
             <h2 className="text-[16px] font-bold text-gray-900 mb-3">계정 설정</h2>
             <div className="bg-white rounded-2xl border border-gray-100 p-4 flex items-center gap-3">
               <div className="w-12 h-12 rounded-full bg-orange-100 flex items-center justify-center text-orange-500 font-extrabold text-xl">
-                {MOCK_USER.name[0]}
+                {user.name?.[0] ?? ''}
               </div>
               <div>
-                <p className="text-[15px] font-bold text-gray-900">{MOCK_USER.name}</p>
-                <p className="text-[12px] text-gray-400">파트너 · {MOCK_USER.joinedAt} 가입</p>
+                <p className="text-[15px] font-bold text-gray-900">{user.name}</p>
+                <p className="text-[12px] text-gray-400">파트너 · {user.joinedAt} 가입</p>
               </div>
             </div>
             <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden">
@@ -235,7 +248,7 @@ export default function SemiDealerDashboard() {
               ))}
             </div>
             <button
-              onClick={() => navigate('/semi-dealer')}
+              onClick={handleLogout}
               className="w-full py-3.5 rounded-xl text-[14px] font-bold text-red-400 border border-red-100 bg-white"
             >
               로그아웃

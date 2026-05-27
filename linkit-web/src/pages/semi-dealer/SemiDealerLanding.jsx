@@ -19,9 +19,15 @@ export default function SemiDealerLanding() {
       return
     }
     setLoading(true)
-    // TODO: 실제 인증 연동
-    await new Promise(r => setTimeout(r, 800))
+    await new Promise(r => setTimeout(r, 600))
     setLoading(false)
+    const users = JSON.parse(localStorage.getItem('sd_users') || '[]')
+    const user = users.find(u => u.phone === form.phone && u.password === form.password)
+    if (!user) {
+      setError('전화번호 또는 비밀번호가 올바르지 않습니다.')
+      return
+    }
+    localStorage.setItem('sd_session', JSON.stringify(user))
     navigate('/semi-dealer/dashboard')
   }
 
