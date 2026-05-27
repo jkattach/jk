@@ -1,23 +1,17 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
-const MOCK_USER = { name: '김현장', role: 'introducer', joinedAt: '2025.03.12' }
-
-const MOCK_STATS = {
-  official:   { commission: '1,240,000', orders: 38, customers: 12, pending: '280,000' },
-  introducer: { commission: '320,000',   orders: 9,  customers: null, pending: '80,000' },
-  consumer:   { commission: null,        orders: 3,  customers: null, pending: null },
-}
+const MOCK_USER = { name: '김현장', joinedAt: '2025.03.12' }
 
 const MOCK_ORDERS = [
-  { id: 'LK-0934', product: '틸트로테이터 TR-5000', customer: '박기사', amount: '980,000', status: '배송완료', date: '2025.05.18' },
-  { id: 'LK-0912', product: '회전링크 RL-300',      customer: '이현장', amount: '420,000', status: '처리중',   date: '2025.05.14' },
-  { id: 'LK-0891', product: '레벨기 LV-200',        customer: '최팀장', amount: '310,000', status: '접수대기', date: '2025.05.10' },
+  { id: 'LK-0934', product: '틸트로테이터 TR-5000', amount: '980,000', status: '배송완료', date: '2025.05.18' },
+  { id: 'LK-0912', product: '회전링크 RL-300',      amount: '420,000', status: '처리중',   date: '2025.05.14' },
+  { id: 'LK-0891', product: '레벨기 LV-200',        amount: '310,000', status: '접수대기', date: '2025.05.10' },
 ]
 
 const MOCK_LINKS = [
-  { code: 'KH-2934', label: '틸트로테이터 메인 링크', clicks: 34, conversions: 2, earned: '96,000' },
-  { code: 'KH-2935', label: '회전링크 이벤트 링크',   clicks: 18, conversions: 1, earned: '42,000' },
+  { code: 'KH-2934', label: '틸트로테이터 메인 링크', clicks: 34, conversions: 2 },
+  { code: 'KH-2935', label: '회전링크 이벤트 링크',   clicks: 18, conversions: 1 },
 ]
 
 const STATUS_STYLE = {
@@ -26,32 +20,23 @@ const STATUS_STYLE = {
   '접수대기': 'bg-orange-50 text-orange-600',
 }
 
-const ROLE_LABELS = {
-  official: '정식딜러',
-  introducer: '세미딜러',
-  consumer: '소비자',
-}
+const NAV = [
+  { label: '홈',    Icon: HomeIcon },
+  { label: '소개링크', Icon: LinkIcon },
+  { label: '주문',  Icon: BoxIcon },
+  { label: '설정',  Icon: SettingsIcon },
+]
 
 export default function SemiDealerDashboard() {
   const navigate = useNavigate()
-  const [role, setRole] = useState(MOCK_USER.role)
   const [tab, setTab] = useState('홈')
   const [copied, setCopied] = useState(null)
-  const stats = MOCK_STATS[role]
 
   const handleCopy = (code) => {
     navigator.clipboard.writeText(`https://linkit.kr/ref/${code}`)
     setCopied(code)
     setTimeout(() => setCopied(null), 2000)
   }
-
-  const navItems = [
-    { label: '홈', icon: HomeIcon },
-    ...(role !== 'consumer' ? [{ label: '소개링크', icon: LinkIcon }] : []),
-    { label: '주문', icon: BoxIcon },
-    ...(role === 'official' ? [{ label: '고객', icon: UsersIcon }] : []),
-    { label: '설정', icon: SettingsIcon },
-  ]
 
   return (
     <div className="min-h-screen bg-gray-50 pb-20">
@@ -66,34 +51,23 @@ export default function SemiDealerDashboard() {
               </svg>
             </div>
             <span className="text-[16px] font-extrabold text-gray-900">링크잇</span>
-            <span className="text-[10px] bg-orange-100 text-orange-600 font-bold px-2 py-0.5 rounded-full">
-              {ROLE_LABELS[role]}
-            </span>
+            <span className="text-[10px] bg-orange-100 text-orange-600 font-bold px-2 py-0.5 rounded-full">파트너</span>
           </div>
-          <div className="flex items-center gap-2">
-            {/* 개발용 역할 전환 */}
-            <select
-              value={role}
-              onChange={e => { setRole(e.target.value); setTab('홈') }}
-              className="text-[11px] border border-gray-200 rounded-lg px-2 py-1 text-gray-600 bg-gray-50"
-            >
-              <option value="official">정식딜러</option>
-              <option value="introducer">세미딜러</option>
-              <option value="consumer">소비자</option>
-            </select>
-            <button onClick={() => navigate('/semi-dealer')} className="text-[11px] text-gray-400 font-medium">
-              로그아웃
-            </button>
-          </div>
+          <button
+            onClick={() => navigate('/semi-dealer')}
+            className="text-[12px] text-gray-400 font-medium border border-gray-200 rounded-lg px-3 py-1"
+          >
+            로그아웃
+          </button>
         </div>
 
         {/* 탭 바 */}
-        <div className="flex overflow-x-auto scroll-hide border-t border-gray-100">
-          {navItems.map(n => (
+        <div className="flex border-t border-gray-100">
+          {NAV.map(n => (
             <button
               key={n.label}
               onClick={() => setTab(n.label)}
-              className={`flex-shrink-0 px-4 py-2.5 text-[12px] font-bold border-b-2 whitespace-nowrap transition ${
+              className={`flex-1 py-2.5 text-[12px] font-bold border-b-2 transition ${
                 tab === n.label
                   ? 'border-orange-500 text-orange-500'
                   : 'border-transparent text-gray-400'
@@ -117,25 +91,14 @@ export default function SemiDealerDashboard() {
               </div>
               <div className="flex-1 min-w-0">
                 <p className="font-extrabold text-[16px]">{MOCK_USER.name} 님</p>
-                <p className="text-[11px] text-orange-100">{ROLE_LABELS[role]} · {MOCK_USER.joinedAt} 가입</p>
+                <p className="text-[11px] text-orange-100">파트너 · {MOCK_USER.joinedAt} 가입</p>
               </div>
-              {stats.commission && (
-                <div className="text-right flex-shrink-0">
-                  <p className="text-[10px] text-orange-200 mb-0.5">이번 달 수수료</p>
-                  <p className="font-extrabold text-[16px] text-white">{stats.commission}원</p>
-                </div>
-              )}
             </div>
 
             {/* 통계 카드 */}
-            <div className={`grid gap-3 ${stats.pending && stats.customers ? 'grid-cols-3' : stats.pending ? 'grid-cols-2' : 'grid-cols-1'}`}>
-              {stats.pending && (
-                <StatCard label="정산 예정" value={`${stats.pending}원`} color="text-orange-500" />
-              )}
-              <StatCard label="총 주문" value={`${stats.orders}건`} color="text-gray-900" />
-              {stats.customers && (
-                <StatCard label="내 고객" value={`${stats.customers}명`} color="text-blue-600" />
-              )}
+            <div className="grid grid-cols-2 gap-3">
+              <StatCard label="이번 달 소개" value="9건" color="text-orange-500" />
+              <StatCard label="누적 소개" value="38건" color="text-gray-900" />
             </div>
 
             {/* 최근 주문 */}
@@ -154,39 +117,36 @@ export default function SemiDealerDashboard() {
                     <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full flex-shrink-0 ${STATUS_STYLE[o.status]}`}>
                       {o.status}
                     </span>
-                    <span className="text-[13px] font-bold text-gray-900 flex-shrink-0">{o.amount}원</span>
                   </div>
                 ))}
               </div>
             </div>
 
-            {/* 소개 링크 (소비자 제외) */}
-            {role !== 'consumer' && (
-              <div>
-                <div className="flex items-center justify-between mb-2">
-                  <h3 className="text-[14px] font-bold text-gray-900">내 소개 링크</h3>
-                  <button onClick={() => setTab('소개링크')} className="text-[12px] text-orange-500 font-medium">전체보기</button>
-                </div>
-                <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden">
-                  {MOCK_LINKS.map((l, i) => (
-                    <div key={l.code} className={`px-4 py-3 flex items-center gap-3 ${i < MOCK_LINKS.length - 1 ? 'border-b border-gray-50' : ''}`}>
-                      <div className="flex-1 min-w-0">
-                        <p className="text-[13px] font-bold text-gray-900 truncate">{l.label}</p>
-                        <p className="text-[11px] text-gray-400">클릭 {l.clicks} · 전환 {l.conversions} · 수익 {l.earned}원</p>
-                      </div>
-                      <button
-                        onClick={() => handleCopy(l.code)}
-                        className={`text-[11px] font-bold px-3 py-1.5 rounded-full flex-shrink-0 transition ${
-                          copied === l.code ? 'bg-green-100 text-green-700' : 'bg-orange-500 text-white'
-                        }`}
-                      >
-                        {copied === l.code ? '복사됨 ✓' : '복사'}
-                      </button>
-                    </div>
-                  ))}
-                </div>
+            {/* 소개 링크 */}
+            <div>
+              <div className="flex items-center justify-between mb-2">
+                <h3 className="text-[14px] font-bold text-gray-900">내 소개 링크</h3>
+                <button onClick={() => setTab('소개링크')} className="text-[12px] text-orange-500 font-medium">전체보기</button>
               </div>
-            )}
+              <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden">
+                {MOCK_LINKS.map((l, i) => (
+                  <div key={l.code} className={`px-4 py-3 flex items-center gap-3 ${i < MOCK_LINKS.length - 1 ? 'border-b border-gray-50' : ''}`}>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-[13px] font-bold text-gray-900 truncate">{l.label}</p>
+                      <p className="text-[11px] text-gray-400">클릭 {l.clicks} · 전환 {l.conversions}</p>
+                    </div>
+                    <button
+                      onClick={() => handleCopy(l.code)}
+                      className={`text-[11px] font-bold px-3 py-1.5 rounded-full flex-shrink-0 transition ${
+                        copied === l.code ? 'bg-green-100 text-green-700' : 'bg-orange-500 text-white'
+                      }`}
+                    >
+                      {copied === l.code ? '복사됨 ✓' : '복사'}
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
         )}
 
@@ -215,11 +175,10 @@ export default function SemiDealerDashboard() {
                     {copied === l.code ? '복사됨 ✓' : '링크 복사'}
                   </button>
                 </div>
-                <div className="grid grid-cols-3 gap-2">
+                <div className="grid grid-cols-2 gap-2">
                   {[
                     { label: '클릭', value: l.clicks, color: 'text-gray-900' },
-                    { label: '전환', value: l.conversions, color: 'text-amber-600' },
-                    { label: '수익', value: `${l.earned}원`, color: 'text-orange-500' },
+                    { label: '전환', value: l.conversions, color: 'text-orange-500' },
                   ].map(m => (
                     <div key={m.label} className="bg-gray-50 rounded-xl py-2.5 text-center">
                       <p className={`text-[15px] font-extrabold ${m.color}`}>{m.value}</p>
@@ -229,14 +188,6 @@ export default function SemiDealerDashboard() {
                 </div>
               </div>
             ))}
-            <div className="bg-orange-50 border border-orange-100 rounded-2xl p-4">
-              <p className="text-[12px] font-bold text-orange-600 mb-2">수수료 정책</p>
-              <ul className="text-[12px] text-orange-700 space-y-1">
-                <li>· 세미딜러: 판매가의 <strong>5~8%</strong></li>
-                <li>· 정식딜러: 판매가의 <strong>10~15%</strong></li>
-                <li>· 매월 말일 정산 → 익월 10일 이내 지급</li>
-              </ul>
-            </div>
           </div>
         )}
 
@@ -253,27 +204,10 @@ export default function SemiDealerDashboard() {
                   </span>
                 </div>
                 <div className="flex items-center justify-between text-[12px] text-gray-400">
-                  <span>{o.id} · {o.customer} · {o.date}</span>
-                  <span className="font-bold text-gray-800">{o.amount}원</span>
+                  <span>{o.id} · {o.date}</span>
                 </div>
               </div>
             ))}
-          </div>
-        )}
-
-        {/* 고객 탭 */}
-        {tab === '고객' && role === 'official' && (
-          <div>
-            <h2 className="text-[16px] font-bold text-gray-900 mb-3">고객 관리</h2>
-            <div className="bg-white rounded-2xl border border-gray-100 p-8 text-center text-gray-400">
-              <svg width="40" height="40" viewBox="0 0 24 24" fill="none" className="mx-auto mb-2 text-gray-200">
-                <circle cx="9" cy="7" r="4" stroke="currentColor" strokeWidth="1.5"/>
-                <circle cx="17" cy="9" r="3" stroke="currentColor" strokeWidth="1.5"/>
-                <path d="M2 21C2 18.24 5.13 16 9 16C12.87 16 16 18.24 16 21" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
-                <path d="M18 14C19.66 14 21 15.12 21 16.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
-              </svg>
-              <p className="text-[14px]">고객 데이터를 불러오는 중입니다.</p>
-            </div>
           </div>
         )}
 
@@ -287,7 +221,7 @@ export default function SemiDealerDashboard() {
               </div>
               <div>
                 <p className="text-[15px] font-bold text-gray-900">{MOCK_USER.name}</p>
-                <p className="text-[12px] text-gray-400">{ROLE_LABELS[role]} · {MOCK_USER.joinedAt} 가입</p>
+                <p className="text-[12px] text-gray-400">파트너 · {MOCK_USER.joinedAt} 가입</p>
               </div>
             </div>
             <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden">
@@ -313,15 +247,15 @@ export default function SemiDealerDashboard() {
       {/* 하단 네비게이션 */}
       <nav className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[480px] bg-white border-t border-gray-100 z-50" style={{ height: 72 }}>
         <div className="flex h-full">
-          {navItems.map(n => (
+          {NAV.map(({ label, Icon }) => (
             <button
-              key={n.label}
-              onClick={() => setTab(n.label)}
-              className={`flex-1 flex flex-col items-center justify-center gap-0.5 transition-colors ${tab === n.label ? 'text-orange-500' : 'text-gray-400'}`}
+              key={label}
+              onClick={() => setTab(label)}
+              className={`flex-1 flex flex-col items-center justify-center gap-0.5 transition-colors ${tab === label ? 'text-orange-500' : 'text-gray-400'}`}
             >
-              <n.icon active={tab === n.label} />
-              <span className={`text-[10px] font-medium ${tab === n.label ? 'text-orange-500' : 'text-gray-400'}`}>
-                {n.label}
+              <Icon active={tab === label} />
+              <span className={`text-[10px] font-medium ${tab === label ? 'text-orange-500' : 'text-gray-400'}`}>
+                {label}
               </span>
             </button>
           ))}
@@ -360,15 +294,6 @@ function BoxIcon({ active }) {
   return (
     <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
       <path d="M21 10H3M16 2L12 10L8 2M5 10L3 20H21L19 10H5Z" stroke={active ? '#F97316' : '#9CA3AF'} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" fill={active ? '#FFF7ED' : 'none'}/>
-    </svg>
-  )
-}
-function UsersIcon({ active }) {
-  return (
-    <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-      <circle cx="9" cy="7" r="4" stroke={active ? '#F97316' : '#9CA3AF'} strokeWidth="1.8" fill={active ? '#FFF7ED' : 'none'}/>
-      <path d="M3 21C3 18.24 5.69 16 9 16C12.31 16 15 18.24 15 21" stroke={active ? '#F97316' : '#9CA3AF'} strokeWidth="1.8" strokeLinecap="round"/>
-      <path d="M16 3C17.66 3 19 4.34 19 6C19 7.66 17.66 9 16 9M20 21C20 18.79 18.21 17 16 17" stroke={active ? '#F97316' : '#9CA3AF'} strokeWidth="1.8" strokeLinecap="round"/>
     </svg>
   )
 }
