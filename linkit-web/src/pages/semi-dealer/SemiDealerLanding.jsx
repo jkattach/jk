@@ -22,7 +22,9 @@ export default function SemiDealerLanding() {
     await new Promise(r => setTimeout(r, 600))
     setLoading(false)
     const users = JSON.parse(localStorage.getItem('sd_users') || '[]')
-    const user = users.find(u => u.phone === form.phone && u.password === form.password)
+    const SEED = [{ name: '테스트', phone: '010-0000-0000', password: '123456', region: '서울', nickname: '', joinedAt: '2025.01.01' }]
+    const all = [...SEED, ...users]
+    const user = all.find(u => u.phone === form.phone && u.password === form.password)
     if (!user) {
       setError('전화번호 또는 비밀번호가 올바르지 않습니다.')
       return
