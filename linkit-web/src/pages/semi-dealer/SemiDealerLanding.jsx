@@ -22,7 +22,7 @@ export default function SemiDealerLanding() {
     await new Promise(r => setTimeout(r, 600))
     setLoading(false)
     const users = JSON.parse(localStorage.getItem('sd_users') || '[]')
-    const SEED = [{ name: '테스트', phone: '010-0000-0000', password: '123456', region: '서울', nickname: '', joinedAt: '2025.01.01' }]
+    const SEED = [{ name: '테스트', phone: '9652', password: '9652', region: '서울', nickname: '', joinedAt: '2025.01.01' }]
     const all = [...SEED, ...users]
     const user = all.find(u => u.phone === form.phone && u.password === form.password)
     if (!user) {
