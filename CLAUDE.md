@@ -22,6 +22,13 @@
 - 스키마 변경 시 `generate_typescript_types`로 `src/types/database.ts` 재생성
 - MCP가 없는 환경이면: 마이그레이션 SQL을 Supabase 대시보드 SQL Editor에서 실행
 
+## 새 Supabase 프로젝트로 시작하기 (환경 이전 시)
+
+1. 새 프로젝트 생성 (서울 리전 권장) → `supabase/setup.sql` 전체를 SQL Editor에서 1회 실행
+2. `.env.local`의 `NEXT_PUBLIC_SUPABASE_URL` / `NEXT_PUBLIC_SUPABASE_ANON_KEY` 교체
+3. `next.config.ts`의 images hostname을 새 프로젝트 도메인으로 교체
+4. 이메일 가입 → SQL로 첫 관리자 지정: `update profiles set role='admin', status='active' where email='...'`
+
 ## 아키텍처 핵심
 
 - 데이터 변경은 전부 Server Actions (`src/server/actions/`)
