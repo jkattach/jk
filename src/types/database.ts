@@ -15,6 +15,329 @@ export type Database = {
   }
   public: {
     Tables: {
+      customers: {
+        Row: {
+          address: string | null
+          business_reg_no: string | null
+          company_name: string | null
+          created_at: string
+          email: string | null
+          id: string
+          memo: string | null
+          name: string
+          owner_id: string
+          phone: string | null
+          updated_at: string
+        }
+        Insert: {
+          address?: string | null
+          business_reg_no?: string | null
+          company_name?: string | null
+          created_at?: string
+          email?: string | null
+          id?: string
+          memo?: string | null
+          name: string
+          owner_id: string
+          phone?: string | null
+          updated_at?: string
+        }
+        Update: {
+          address?: string | null
+          business_reg_no?: string | null
+          company_name?: string | null
+          created_at?: string
+          email?: string | null
+          id?: string
+          memo?: string | null
+          name?: string
+          owner_id?: string
+          phone?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "customers_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      notifications: {
+        Row: {
+          created_at: string
+          error: string | null
+          id: string
+          order_id: string | null
+          payload: Json
+          quote_id: string | null
+          recipient_email: string
+          recipient_profile_id: string | null
+          sent_at: string | null
+          status: Database["public"]["Enums"]["notification_status"]
+          type: string
+        }
+        Insert: {
+          created_at?: string
+          error?: string | null
+          id?: string
+          order_id?: string | null
+          payload?: Json
+          quote_id?: string | null
+          recipient_email: string
+          recipient_profile_id?: string | null
+          sent_at?: string | null
+          status?: Database["public"]["Enums"]["notification_status"]
+          type: string
+        }
+        Update: {
+          created_at?: string
+          error?: string | null
+          id?: string
+          order_id?: string | null
+          payload?: Json
+          quote_id?: string | null
+          recipient_email?: string
+          recipient_profile_id?: string | null
+          sent_at?: string | null
+          status?: Database["public"]["Enums"]["notification_status"]
+          type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "notifications_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "notifications_quote_id_fkey"
+            columns: ["quote_id"]
+            isOneToOne: false
+            referencedRelation: "quotes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "notifications_recipient_profile_id_fkey"
+            columns: ["recipient_profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      order_status_history: {
+        Row: {
+          changed_by: string | null
+          created_at: string
+          from_status: Database["public"]["Enums"]["order_status"] | null
+          id: string
+          note: string | null
+          order_id: string
+          to_status: Database["public"]["Enums"]["order_status"]
+        }
+        Insert: {
+          changed_by?: string | null
+          created_at?: string
+          from_status?: Database["public"]["Enums"]["order_status"] | null
+          id?: string
+          note?: string | null
+          order_id: string
+          to_status: Database["public"]["Enums"]["order_status"]
+        }
+        Update: {
+          changed_by?: string | null
+          created_at?: string
+          from_status?: Database["public"]["Enums"]["order_status"] | null
+          id?: string
+          note?: string | null
+          order_id?: string
+          to_status?: Database["public"]["Enums"]["order_status"]
+        }
+        Relationships: [
+          {
+            foreignKeyName: "order_status_history_changed_by_fkey"
+            columns: ["changed_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "order_status_history_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      orders: {
+        Row: {
+          created_at: string
+          customer_id: string | null
+          docs_delivered_at: string | null
+          id: string
+          install_date: string | null
+          install_location: string | null
+          installed_at: string | null
+          installer_id: string | null
+          memo: string | null
+          order_no: string
+          quote_id: string
+          seller_id: string
+          ship_date: string | null
+          status: Database["public"]["Enums"]["order_status"]
+          updated_at: string
+          vehicle_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          customer_id?: string | null
+          docs_delivered_at?: string | null
+          id?: string
+          install_date?: string | null
+          install_location?: string | null
+          installed_at?: string | null
+          installer_id?: string | null
+          memo?: string | null
+          order_no?: string
+          quote_id: string
+          seller_id: string
+          ship_date?: string | null
+          status?: Database["public"]["Enums"]["order_status"]
+          updated_at?: string
+          vehicle_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          customer_id?: string | null
+          docs_delivered_at?: string | null
+          id?: string
+          install_date?: string | null
+          install_location?: string | null
+          installed_at?: string | null
+          installer_id?: string | null
+          memo?: string | null
+          order_no?: string
+          quote_id?: string
+          seller_id?: string
+          ship_date?: string | null
+          status?: Database["public"]["Enums"]["order_status"]
+          updated_at?: string
+          vehicle_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "orders_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "orders_installer_id_fkey"
+            columns: ["installer_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "orders_quote_id_fkey"
+            columns: ["quote_id"]
+            isOneToOne: true
+            referencedRelation: "quotes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "orders_seller_id_fkey"
+            columns: ["seller_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "orders_vehicle_id_fkey"
+            columns: ["vehicle_id"]
+            isOneToOne: false
+            referencedRelation: "vehicles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      product_images: {
+        Row: {
+          created_at: string
+          id: string
+          product_id: string
+          sort_order: number
+          storage_path: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          product_id: string
+          sort_order?: number
+          storage_path: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          product_id?: string
+          sort_order?: number
+          storage_path?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "product_images_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      products: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          is_active: boolean
+          model_code: string | null
+          name: string
+          price: number
+          sort_order: number
+          specs: Json
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          model_code?: string | null
+          name: string
+          price?: number
+          sort_order?: number
+          specs?: Json
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          model_code?: string | null
+          name?: string
+          price?: number
+          sort_order?: number
+          specs?: Json
+          updated_at?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           created_at: string
@@ -51,11 +374,185 @@ export type Database = {
         }
         Relationships: []
       }
+      quote_items: {
+        Row: {
+          amount: number
+          id: string
+          item_name: string
+          product_id: string | null
+          qty: number
+          quote_id: string
+          sort_order: number
+          unit_price: number
+        }
+        Insert: {
+          amount?: number
+          id?: string
+          item_name: string
+          product_id?: string | null
+          qty?: number
+          quote_id: string
+          sort_order?: number
+          unit_price?: number
+        }
+        Update: {
+          amount?: number
+          id?: string
+          item_name?: string
+          product_id?: string | null
+          qty?: number
+          quote_id?: string
+          sort_order?: number
+          unit_price?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "quote_items_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "quote_items_quote_id_fkey"
+            columns: ["quote_id"]
+            isOneToOne: false
+            referencedRelation: "quotes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      quotes: {
+        Row: {
+          confirmed_at: string | null
+          created_at: string
+          customer_id: string | null
+          customer_snapshot: Json
+          id: string
+          notes: string | null
+          quote_no: string
+          seller_id: string
+          sent_at: string | null
+          share_token: string
+          status: Database["public"]["Enums"]["quote_status"]
+          subtotal: number
+          total: number
+          updated_at: string
+          valid_until: string | null
+          vat: number
+          viewed_at: string | null
+        }
+        Insert: {
+          confirmed_at?: string | null
+          created_at?: string
+          customer_id?: string | null
+          customer_snapshot?: Json
+          id?: string
+          notes?: string | null
+          quote_no?: string
+          seller_id: string
+          sent_at?: string | null
+          share_token?: string
+          status?: Database["public"]["Enums"]["quote_status"]
+          subtotal?: number
+          total?: number
+          updated_at?: string
+          valid_until?: string | null
+          vat?: number
+          viewed_at?: string | null
+        }
+        Update: {
+          confirmed_at?: string | null
+          created_at?: string
+          customer_id?: string | null
+          customer_snapshot?: Json
+          id?: string
+          notes?: string | null
+          quote_no?: string
+          seller_id?: string
+          sent_at?: string | null
+          share_token?: string
+          status?: Database["public"]["Enums"]["quote_status"]
+          subtotal?: number
+          total?: number
+          updated_at?: string
+          valid_until?: string | null
+          vat?: number
+          viewed_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "quotes_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "quotes_seller_id_fkey"
+            columns: ["seller_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      vehicles: {
+        Row: {
+          created_at: string
+          customer_id: string
+          id: string
+          memo: string | null
+          model: string | null
+          plate_no: string | null
+          vin: string | null
+          year: number | null
+        }
+        Insert: {
+          created_at?: string
+          customer_id: string
+          id?: string
+          memo?: string | null
+          model?: string | null
+          plate_no?: string | null
+          vin?: string | null
+          year?: number | null
+        }
+        Update: {
+          created_at?: string
+          customer_id?: string
+          id?: string
+          memo?: string | null
+          model?: string | null
+          plate_no?: string | null
+          vin?: string | null
+          year?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "vehicles_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
+      advance_order_status: {
+        Args: {
+          p_extra?: Json
+          p_next: Database["public"]["Enums"]["order_status"]
+          p_note?: string
+          p_order_id: string
+        }
+        Returns: undefined
+      }
+      confirm_quote: { Args: { p_token: string }; Returns: string }
       get_my_role: {
         Args: never
         Returns: Database["public"]["Enums"]["user_role"]
@@ -66,6 +563,8 @@ export type Database = {
       }
       is_active_user: { Args: never; Returns: boolean }
       is_admin: { Args: never; Returns: boolean }
+      next_order_no: { Args: never; Returns: string }
+      next_quote_no: { Args: never; Returns: string }
     }
     Enums: {
       notification_status: "queued" | "sent" | "failed"
