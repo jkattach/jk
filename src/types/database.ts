@@ -553,6 +553,21 @@ export type Database = {
         Returns: undefined
       }
       confirm_quote: { Args: { p_token: string }; Returns: string }
+      get_quote_by_token: { Args: { p_token: string }; Returns: Json }
+      log_notification: {
+        Args: {
+          p_type: string
+          p_email: string
+          p_profile?: string
+          p_quote?: string
+          p_order?: string
+          p_payload?: Json
+          p_status?: Database["public"]["Enums"]["notification_status"]
+          p_error?: string
+        }
+        Returns: string
+      }
+      quote_notify_context: { Args: { p_token: string }; Returns: Json }
       get_my_role: {
         Args: never
         Returns: Database["public"]["Enums"]["user_role"]
