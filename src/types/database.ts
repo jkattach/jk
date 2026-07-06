@@ -568,6 +568,7 @@ export type Database = {
         Returns: string
       }
       quote_notify_context: { Args: { p_token: string }; Returns: Json }
+      order_notify_context: { Args: { p_order_id: string }; Returns: Json }
       get_my_role: {
         Args: never
         Returns: Database["public"]["Enums"]["user_role"]
