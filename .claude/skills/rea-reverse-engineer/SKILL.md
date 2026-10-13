@@ -1,6 +1,6 @@
 ---
 name: rea-reverse-engineer
-description: REA(Reverse Engineer Anything) MCP를 설치·점검하고, 앱·웹사이트·바이너리의 기능이 어떻게 동작하는지 근거와 함께 분석해 내 프로젝트에 비슷한 기능을 만드는 절차. "REA 설치해줘", "REA 써서 분석해줘", "리버스 엔지니어링", "이 앱 기능 어떻게 만든 건지 뜯어봐", "기드라 연결", "rea doctor" 요청 시 사용.
+description: REA(Reverse Engineer Anything) MCP를 설치·점검하고, 앱·APK·웹사이트·바이너리의 기능이 어떻게 동작하는지 근거와 함께 분석해 내 프로젝트에 비슷한 기능을 만드는 절차. "REA 설치해줘", "REA 써서 분석해줘", "리버스 엔지니어링", "이 앱 기능 어떻게 만든 건지 뜯어봐", "기드라 연결", "rea doctor" 요청 시 사용.
 ---
 
 # REA (Reverse Engineer Anything) 설치·사용
@@ -143,6 +143,56 @@ rea providers --json
 - `REA_GHIDRA_STARTUP_TIMEOUT_MS`, `REA_HOPPER_STARTUP_TIMEOUT_MS`: 큰 바이너리에서 시작 제한시간을 늘린다.
 - `REA_IDA_MCP_CONFIG`: IDA 쓸 때 IDA MCP 등록 JSON 경로.
 
+## Android APK 분석
+
+출처: docs/android-analysis.md, docs/apktool-resource-analysis.md, docs/flutter-analysis.md, docs/adb-device-analysis.md (확인일 2026-10-13)
+
+APK는 실행하지 않고 정적으로 분석한다. 원본 APK 파일은 건드리지 않는다.
+
+| 하고 싶은 것 | 필요한 도구 | 명령(CLI) / MCP 도구 |
+|---|---|---|
+| 매니페스트·권한·SDK·클래스 수 | 풀 JDK 17 이상 + jadx-headless-mcp 0.7.1 JAR | `inspect-android-package` / `inspect_android_package` |
+| 클래스 검색·멤버 목록 | 위와 같음 | `search-android-classes`, `inspect-android-class` |
+| 메서드 디컴파일(Java 또는 smali) | 위와 같음 | `inspect-android-method` |
+| 누가 이 클래스·메서드를 부르는지 | 위와 같음 | `trace-android-references` |
+| 리소스·문자열·다국어 디코딩 | Apktool 2.7.0 이상 + Java | `decode-android-resources` |
+| 폰에 깔린 앱의 APK 추출·로그 확인 | Android platform-tools `adb` | `pull-adb-package`, `read-adb-logcat` 등 |
+| Flutter 앱 빌드 식별 | 추가 도구 불필요 | `identify-flutter-build`, `inspect-dart-aot` (6.4.0 도움말에는 없음. main 저장소 기능으로 보임) |
+
+도구 경로 설정:
+
+```sh
+export REA_JADX_MCP_JAR=/absolute/path/jadx-headless-mcp-0.7.1-all.jar
+export JAVA_HOME=/absolute/path/existing-jdk
+export REA_APKTOOL_COMMAND=/absolute/path/apktool
+export REA_ADB_PATH=/absolute/path/to/adb
+```
+
+명령 예시(원문):
+
+```sh
+rea inspect-android-package /path/Example.apk
+rea search-android-classes /path/Example.apk MainActivity
+rea inspect-android-class /path/Example.apk example.MainActivity
+rea inspect-android-method /path/Example.apk example.MainActivity onCreate
+rea trace-android-references /path/Example.apk example.MainActivity
+rea inspect-apktool-client
+rea decode-android-resources /targets/Example.apk --locale de
+```
+
+안 되는 것(원문 명시):
+
+- APK 실행, 런타임 동작 캡처, 서명 검증
+- split APK·AAB(`.aab`는 APK로 취급하지 않음), 네이티브 라이브러리(.so) 분석. .so는 별도로 Ghidra 등 네이티브 분석을 써야 한다.
+- 디컴파일 결과는 재구성된 코드다. 원본 소스와 똑같다는 보장이 없다.
+
+주의:
+
+- JRE만 있으면 동작하지 않는다. `java --list-modules`로 `jdk.compiler`가 있는지 확인한다.
+- 원문 기준 검증 환경은 macOS arm64 + OpenJDK 21이다. Linux는 지원하지만 실제 검증은 아직 안 됐다고 적혀 있다. Windows x64 지원은 main 저장소에 새로 들어온 기능이라 구버전 패키지에서는 거부될 수 있다.
+- 큰 APK는 `REA_JADX_HEAP_MIB=8192`처럼 힙을 늘린다.
+- adb 명령 중 `install-adb-package`, `uninstall-adb-package`, `push-adb-file`, `stop-adb-app`은 기기 상태를 바꾼다. 분석용 기기·에뮬레이터에서만 쓴다(보충).
+
 ## 요청 문장 예시
 
 원문 예시:
@@ -157,6 +207,11 @@ similar feature for my project.
 ```text
 [앱 이름]에서 [기능]이 어떻게 동작하는지 REA로 확인해 줘.
 근거와 확실하지 않은 부분을 따로 보여주고, 내 프로젝트([경로])에 비슷한 기능을 새로 구현해 줘.
+```
+
+```text
+/absolute/path/to/app.apk 를 REA로 정적 분석해서 매니페스트 권한과
+[기능]을 담당하는 클래스·메서드를 찾아 줘. APK는 실행하지 마.
 ```
 
 ```text
@@ -203,4 +258,5 @@ similar feature for my project.
 - `analyze-javascript-application` 실제 실행: 이 환경의 권한 정책으로 실행이 막혀 돌려 보지 못했다.
 - Ghidra·Hopper·IDA 연결, 브라우저 분석, 네이티브 디컴파일 전 과정.
 - Windows 환경 동작(원문상 Ghidra Windows 지원은 실험 단계).
+- APK 분석 실행: 6.4.0 `--help`에 Android 명령(`inspect-android-package` 등)이 있는 것만 확인했다. JADX·Apktool·adb를 연결해 실제로 돌려 보지는 않았다.
 - 영상의 "그림판 재구현 11분" 시나리오: 원문 저장소에 없는 내용이라 재현하지 않았다.
